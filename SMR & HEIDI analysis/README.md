@@ -16,6 +16,6 @@ rs1003 A C 0.5128 0.0045 0.0038 0.2319 129830
 SNP, the effect allele, the other allele, frequency of the effect allele, effect size, standard error, p-value and sample size.
 ```
 ##### 2
-···
+```
 smr --bld mybld --gwas-summary mygwas.ma --beqtl-summary myeqtl --out mysmr --thread-num 10 
-···
+```
