@@ -15,7 +15,6 @@ export BCFTOOLS_PLUGINS="$HOME/software/bcftools-1.20/plugins:$BCFTOOLS_PLUGINS"
 ```
 #### `MochA` input vcf of WGS
 ```
-```
 ##fileformat=VCFv4.2
 ##INFO=<ID=GC,Number=1,Type=Float,Description="GC ratio content around the variant">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
@@ -26,9 +25,7 @@ export BCFTOOLS_PLUGINS="$HOME/software/bcftools-1.20/plugins:$BCFTOOLS_PLUGINS"
 1	798959	rs11240777	G	A	.	.	GC=0.4075	GT:AD	0|0:31,0
 1	932457	rs1891910	G	A	.	.	GC=0.6425	GT:AD	1|0:18,14
 ```
-```
 #### The vcf of WGS need columns `GC GT AD`, where `GT AD` were contained in the `GATK` out vcffile
-
 #### If your VCF does not include the `GC` field, this can be added with the command
 ```
 bcftools +mochatools --no-version -Ob $vcf -- -t GC -f $ref
