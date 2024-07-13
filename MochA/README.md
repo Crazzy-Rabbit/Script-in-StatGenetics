@@ -52,7 +52,7 @@ bcftools view --no-version -h $vcf | \
   bcftools norm --no-version -Ou -m -any --keep-sum AD | \
   bcftools norm --no-version -o $dir/$pfx.unpheased.bcf -Ob -f $ref --write-index
 ```
-### step3: Creat a list of `variants that will be excluded from modeling by both eagle and mocha` (Optional)
+#### step3: Creat a list of `variants that will be excluded from modeling by both eagle and mocha` (Optional)
 ```
 awk -F"\t" '$2<.97 {print $1}' $crt > sample_xcl_list.txt
 
