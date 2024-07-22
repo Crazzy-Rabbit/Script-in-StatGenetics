@@ -31,7 +31,7 @@ def main(infile, samplesize, output):
     else:
         df = pd.read_csv(infile)
         df['nSample'] = samplesize
-        df.to_csv(f_out, sep='\t', index=False)
+        df.to_csv(output, sep='\t', index=False)
 
 if __name__ == '__main__':
     main()
