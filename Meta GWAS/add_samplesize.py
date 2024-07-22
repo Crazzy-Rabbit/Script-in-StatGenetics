@@ -29,13 +29,9 @@ def main(infile, samplesize, output):
         with gzip.open(output, 'wt') as f_out:
             df.to_csv(f_out, sep='\t', index=False)
     else:
-        with open(infile, 'r') as f_in:
-            csv_content = f_in.read()
-
-        df = pd.read_csv(StringIO(csv_content))
+        df = pd.read_csv(infile)
         df['nSample'] = samplesize
-        with open(output, 'w') as f_out:
-            df.to_csv(f_out, sep='\t', index=False)
+        df.to_csv(f_out, sep='\t', index=False)
 
 if __name__ == '__main__':
     main()
