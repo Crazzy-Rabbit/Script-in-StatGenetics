@@ -22,14 +22,14 @@ from io import StringIO
 def main(infile, samplesize, output):
     if infile.endswith(".gz"):
         with gzip.open(infile, 'rt') as f_in:
-            csv_content = f_in.read()
-   
-        df = pd.read_csv(StringIO(csv_content))  # 使用StringIO处理非字符串内容
+            csv_content = f_in.read()   
+        df = pd.read_csv(StringIO(csv_content), sep='\\s+', engine='python')  # 使用StringIO处理非字符串内容
         df['nSample'] = samplesize
         with gzip.open(output, 'wt') as f_out:
             df.to_csv(f_out, sep='\t', index=False)
+            
     else:
-        df = pd.read_csv(infile)
+        df = pd.read_csv(infile, sep='\\s+', engine='python')
         df['nSample'] = samplesize
         df.to_csv(output, sep='\t', index=False)
 
