@@ -34,8 +34,7 @@ def main(infile, samplesize, output):
             'A1FREQ', 'nSample', 'CHR', 'BP']].to_csv(f"{f_out}.MRMEGAin", sep='\t', index=False)
 
         os.system(f"gzip {f_out}.MRMEGAin")
-        os.remove(f"{f_out}.MRMEGAin")
-
+        
     else:
         df = pd.read_csv(infile, dtype={'POS':int}, 
                          sep='\\s+', engine='python')
