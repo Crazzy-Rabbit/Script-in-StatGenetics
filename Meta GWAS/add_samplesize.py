@@ -22,6 +22,7 @@ from io import StringIO
 def main(infile, samplesize, output):
     """
     add sample size and change GWAS summary data header to MR-MEGA in file format \n
+    and change BBJ SNP format same as UKB \n
     such: MARKERNAME EA NEA BETA SE EAF N CHR POS
     """
     if infile.endswith(".gz"):
@@ -31,16 +32,22 @@ def main(infile, samplesize, output):
                          sep='\\s+', engine='python')  # 使用StringIO处理非字符串内容
         df['nSample'] = samplesize
         df[['SNP', 'ALLELE0', 'ALLELE1', 'BETA', 'SE',
-            'A1FREQ', 'nSample', 'CHR', 'BP']].to_csv(f"{f_out}.MRMEGAin", sep='\t', index=False)
+            'A1FREQ', 'nSample', 'CHR', 'BP']].to_csv(f"{output}.MRMEGAin", sep='\t', index=False)
 
-        os.system(f"gzip {f_out}.MRMEGAin")
-        
+        os.system(f"gzip {output}.MRMEGAin")
+
     else:
         df = pd.read_csv(infile, dtype={'POS':int}, 
                          sep='\\s+', engine='python')
         df['nSample'] = samplesize
+        # 将SNP变为1:612688_TCTC_T这种形式
+        df.loc[df['SNP'].str.startswith('chr'), 'SNP'] =  \
+               df['SNP'].str.replace('chr', '', regex=True).str.replace("_", ":") + '_' + df['A1'] + '_' + df['A2']
+
         df[['SNP', 'A1', 'A2', 'BETA', 'SE',
             'A1Frq', 'nSample', 'CHR', 'POS']].to_csv(f"{output}.MRMEGAin", sep='\t', index=False)
+
+        os.system(f"gzip {output}.MRMEGAin")
 
 if __name__ == '__main__':
     main()
