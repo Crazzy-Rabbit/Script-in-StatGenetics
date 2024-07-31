@@ -5,24 +5,18 @@ popcorn 用于估计在不同群体中常见SNP的因果效应量的相关性，
 ```
 #### step 1 计算ld
 ```
-popcorn compute -v 2 \
-    --bfile1 Popcorn/test/EUR_ref \
-    --bfile2 Popcorn/test/EAS_ref \
-    --gen_effect \
-    Popcorn/test/EUR_EAS_test_ge.cscore
+popcorn compute -v 2 --bfile1 Popcorn/test/EUR_ref --bfile2 Popcorn/test/EAS_ref Popcorn/test/EUR_EAS_test_ge.cscore
 
-# --gen_effect 计算遗传效应相关，两步都需加上该参数
+# --gen_effect 计算遗传效应相关，两步都需加上该参数，无则结果为遗传冲击相关
 # 软件提供了 eur-eas的
 ```
 #### step 2 计算correlation
 ```
-popcorn fit -v 1 --cfile EUR_EAS_all_gen_imp.cscore \
-            --sfile1 ${j}_ukb.txt.popcornin \
-            --sfile2 ${i}_bbj.txt.popcornin \
-  #         --gen_effect \
-            ${outdir}/bbj${i}-ukb${j}_correlation.txt
+popcorn fit -v 1 --cfile EUR_EAS_all_gen_imp.cscore --sfile1 $eur.txt.popcornin --sfile2 $eas.txt.popcornin correlation.txt
 
-# summary data col: rsid/SNP a1/A1 a2/A2 af N beta SE
+# summary data col: rsid/SNP a1/A1 a2/A2 af N beta SE 其中af对应a2的freq
+# --gen_effect 计算遗传效应相关，两步都需加上该参数
+# --sfile1 和 sfile2顺序需与 cscore 中一致
 ```
 
 #### change file to popcornin
