@@ -1,4 +1,4 @@
-#### popcorn  trans-ethnic heritability and genetic correlation
+#### `popcorn`  trans-ethnic heritability and genetic correlation
 ```
 popcorn 用于估计在不同群体中常见SNP的因果效应量的相关性，同一性状。该方法纳入了研究中所有SNP的关联信息（区别于其他需要事先进行LD-pruning的方法），
 而且仅使用GWAS的概括数据，减少了计算负担，并避免了无法获取基因型数据的问题。
