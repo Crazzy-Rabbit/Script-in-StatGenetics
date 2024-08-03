@@ -13,7 +13,17 @@
 ```
 conda activate mtag
 
-python mtag.py --sumstats trait1.txt,trait2.txt --chr_name CHR --snp_name SNP --bpos_name BP \
-           --a1_name A1 --a2_name A2 --eaf_name A1Freq --p_name P --stream_stdout \
-           --n_name N --z_name Z --n_min 0.0 --out mtag.result
+python mtag.py --sumstats trait1.txt,trait2.txt \
+               --stream_stdout \
+               --n_min 0.0 \
+               --out mtag.result
+```
+输入文件很多时的简单方法（没办法，太懒了，不想一个一个加）
+```
+input_str=`ls *.mtag | tr '\n' ',' | sed 's/,$//'`
+
+python mtag.py --sumstats $input_str  \
+           --stream_stdout \
+           --n_min 0.0 \
+           --out mtag.result
 ```
