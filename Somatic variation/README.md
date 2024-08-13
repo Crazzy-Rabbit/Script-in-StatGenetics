@@ -1,5 +1,5 @@
 ### The pipeline of somatic variation calling using `Mutect2 of GATK4.1.2`
-step1: call somatic variation using `Mutect2`
+##### step1: call somatic variation using `Mutect2`
 > Note: The germline resource and ref panel of normal variation can download from [here](https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/)
 
 ```
@@ -15,8 +15,15 @@ outdir="/public/share/wchirdzhq2022/Wulab_share/somatic"
 ${GATK4}  Mutect2 \
       -R ${REF} \
       -I ${indir}/HG002_bwa_sort_rg.bam \
-      --panel-of-normals  ${PON}\
+      --panel-of-normals  ${PON} \
       --germline-resource ${Germline} \
       --tmp-dir ${tmpdir} \
       -O HG002_bwa_sort_rg.vcf.gz
+```
+##### step2: Filter using `FilterMutectCalls`
+```
+${GATK4} FilterMutectCalls \
+   -R $REF \
+   -V HG002_bwa_sort_rg.vcf.gz \
+   -O HG002_bwa_sort_rg.filter.vcf.gz
 ```
