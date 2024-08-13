@@ -1,6 +1,7 @@
-### The pipeline of somatic variation calling using `Mutect2 of GATK4`
-step1: call somatic variation
-> Note: The germline resource can download from [!here](https://storage.cloud.google.com/gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf)
+### The pipeline of somatic variation calling using `Mutect2 of GATK4.1.2`
+step1: call somatic variation using `Mutect2`
+> Note: The germline resource and ref panel of normal variation can download from [here](https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/)
+
 ```
 GATK4="/public/software/apps/GATK/4.1.2.0/gatk"
 REF="/public/home/shilulu/reference/hs37d5/hs37d5.fa"
