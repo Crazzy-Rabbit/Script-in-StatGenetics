@@ -32,11 +32,10 @@ run_filter < function(smr, outname){
 
 eQTL = "/public/home/gaikai/data/multi_tissue_xQTL/eqtl_all_tissue/Whole_Blood"
 eQTLGen = "/public/home/gaikai/data/multi_tissue_xQTL/eqtl_all_tissue/Whole_Blood"
-GWAS = "reformatMETAL.gz"
+gwas = "reformatMETAL.gz"
 
 # select GWAS file cols: SNP A1 A2 freq beta SE N 
 setwd("~/all_meta/")
-gwas = fread(GWAS)[, .(SNP, A1, A2, freq, beta, SE, N)]
 
 # run smr and filter
 setwd("~/SMR/whole_blood/")
