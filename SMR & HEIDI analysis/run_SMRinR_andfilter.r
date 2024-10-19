@@ -35,7 +35,7 @@ eQTLGen = "/public/home/gaikai/data/multi_tissue_xQTL/eqtl_all_tissue/Whole_Bloo
 GWAS = "reformatMETAL.gz"
 
 # select GWAS file cols: SNP A1 A2 freq beta SE N 
-setwd("/public/home/shilulu/project_hearing-loss/new_run/all_meta/")
+setwd("~/all_meta/")
 gwas = fread(GWAS)[, .(SNP, A1, A2, freq, beta, SE, N)]
 
 # run smr and filter
