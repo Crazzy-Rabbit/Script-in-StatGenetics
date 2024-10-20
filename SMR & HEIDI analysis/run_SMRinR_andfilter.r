@@ -18,29 +18,27 @@ run_smr_qtl <- function(gwas, qtl, outname){
                       "--thread-num 10"), intern=TRUE) -> mylog
     writeLines(mylog, paste0(outname, ".log"))
 }
-
 # p_SMR & p_HEIDI filter
 run_filter <- function(smr, outname){
-    file = fread(smr)
-    filter = file %>%
-               filter(p_SMR <= 0.05/nrow(file) & p_HEIDI >= 0.01)
+    smr_file = fread(smr)
+    flt_file = smr_file %>% filter(p_SMR <= 0.05/nrow(smr_file) & p_HEIDI >= 0.01)
 
-    write.table(filter_out, file=paste0(outname, "_", sprintf("%.2e", 0.05/nrow(file)), "_pass_smr_0.01_pass_heidi.txt"), 
-            sep="\t", row.names=FALSE, quote=FALSE)
+    write.table(flt_file, file=paste0(outname, "_", sprintf("%.2e", 0.05/nrow(smr_file)), "smr_0.01heidi.txt"), sep="\t", row.names=FALSE, quote=FALSE)
 }
 
-
+# # # start run smr and filter
+# whole blood eQTL #
 eQTL = "/public/home/gaikai/data/multi_tissue_xQTL/eqtl_all_tissue/Whole_Blood"
 eQTLGen = "/public/home/gaikai/data/multi_tissue_xQTL/eqtl_all_tissue/Whole_Blood"
-gwas = "reformatMETAL.gz"
+gwas = "~/reformatMETAL.gz"
 
 # run smr and filter
 setwd("~/SMR/whole_blood/")
-outprx = str_replace(GWAS, ".gz", "_whole_blood")
+outprx = paste0(basename(gwas), "_whole_blood")
 
 for (qtl in c(eQTL, eQTLGen)){
     qtlname = ifelse(grepl("eQTL", qtl), "eQTL", "eQTLGen")
-    outname = paste0(outprx, qtlname)
+    outname = paste0(outprx, "_", qtlname)
     run_smr_qtl(gwas, qtl, outname)
-    run_filter(paste0(outname,"smr"), outname)
+    run_filter(paste0(outname,".smr"), outname)
 }
