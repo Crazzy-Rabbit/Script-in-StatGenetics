@@ -1,6 +1,5 @@
 # # # run_SMRinR_fiter.r
 library(dplyr)
-library(stringr)
 library(data.table)
 
 # r function run smr qtl to trait
