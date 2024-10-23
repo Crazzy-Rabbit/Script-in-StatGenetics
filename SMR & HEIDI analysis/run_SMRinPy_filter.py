@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+'''
+@File    :   run_SMRinPy_filter.py
+@Time    :   2024/10/23 20:21:31
+@Author  :   Lulu Shi 
+@Mails   :   crazzy_rabbit@163.com
+@link    :   https://github.com/Crazzy-Rabbit
+'''
 import os
 import argparse
 import pandas as pd
