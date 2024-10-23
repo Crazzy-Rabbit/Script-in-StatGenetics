@@ -1,5 +1,5 @@
 #***********************************************#
-# File   :   run_SMRinR_filter.r                 #
+# File   :   run_SMRinR_filter.r                #
 # Time   :   2024/10/23 20:50:51                #
 # Author :   Lulu Shi                           #
 # Mails  :   crazzy_rabbit@163.com              #
