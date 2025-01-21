@@ -1,4 +1,4 @@
-### `smr` & `heidi`分析
+### 1、`smr` & `heidi`分析
 ##### 1 run SMR and HEIDI
 ```
 smr -bfile bfile --gwas-summary GWAS --beqtl-summary eQTL --out --diff-freq-prop 0.5 --maf 0.01 --cis-wind 2000 --out OUTPUT --thread-num 10
@@ -29,3 +29,28 @@ SMRLocusPlot(data=SMRData, smr_thresh=5.37e-7, heidi_thresh=0.01, plotWindow=100
 dev.off()
 ```
 ![image](https://github.com/user-attachments/assets/39be54ef-4f45-4347-b4d9-0af5fbe19640)
+
+### 2、`smr`将多个某QTL的`besd`文件合并
+```
+ls bl_mqtl_chr*.besd | while read id; do 
+    gwas=$(basename -- ${id} ".besd")
+    echo `pwd`/"$gwas" >> bl_mqtl_merge_besd.txt
+done
+
+smr \
+--besd-flist bl_mqtl_merge_besd.txt \
+--mecs \
+--make-besd-dense \
+--thread-num 8 \
+--out LBC_BSGS_meta_all
+```
+
+### 3、`smr` analysis of two molecular traits
+```
+smr --bfile mydata --beqtl-summary myexposure --beqtl-summary myoutcome  --out myomics
+
+# --extract-exposure-probe extracts a subset of exposure probes for analysis.
+# --extract-outcome-probe extracts a subset of outcome probes for analysis.
+# --exclude-exposure-probe excludes a subset of exposure probes from analysis.
+# --exclude-outcome-probe excludes a subset of outcome probes from analysis.
+```
