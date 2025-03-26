@@ -16,7 +16,7 @@ out_block="/gctb/impu_block/gwas_gctb_impu"
 # step1: impute summary data --block 分blcok跑，总共是591个block，效率更高
 for i in {1..591}; do
     cmd1="${gctb} --ldm-eigen ${ldref} --gwas-summary ${gwas} --impute-summary --block {i} --out ${i} --thread 10 > ${out_block}{i}.log 2>&1"
-    nohup ${i} &
+    nohup ${cmd} &
 done
 
 out_impu="gwas_gctb.imputed"
@@ -40,6 +40,6 @@ for i in {1..22}; do
   cmd="gctb --sbayes S --ldm ${ldref}/ukb50k_shrunk_chr{TASK_ID}_mafpt01.ldm.sparse --annot ${annofile} --chr {TASK_ID} \
   --gwas-summary ${gwas_impu} --no-mcmc-bin --thread 10 \
   --out ${outdir}/${outprx}_SbayesS_chr{TASK_ID} > ${outdir}/${outprx}_SbayesS_chr{TASK_ID}.log 2>&1"
-  nohup ${i} &
+  nohup ${cmd} &
 done
 ```
