@@ -1,7 +1,11 @@
 
 #### `METAL` 进行meta GWAS
 只需要一个配置文件即可，还是比较简单的
-他是基于`fixed-effect model`$\beta = $
+他是基于`fixed-effect model`
+$$
+\hat {\beta}_META = \sum_{c}\frac{\hat\beta_c}{{SE_{\beta_c}}^2}
+SE_{\hat\beta_META} = \sqrt{\frac{1}{\sum_{c}\frac{1}{SE_{\hat_{\beta_c}}}}}
+$$
 ```
 metal METAL.conf
 ```
