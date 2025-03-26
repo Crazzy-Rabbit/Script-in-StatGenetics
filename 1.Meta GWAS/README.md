@@ -3,7 +3,7 @@
 只需要一个配置文件即可，还是比较简单的
 他是基于`fixed-effect model`
 $$
-\hat {\beta}_{META} = \sum_{c}\frac{\hat\beta_c}{{SE_{\hat\beta_c}}^2}
+\hat\beta_{META} = \sum_{c}\frac{\hat\beta_c}{{SE_{\hat\beta_c}}^2}
 $$
 
 $$
