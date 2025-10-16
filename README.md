@@ -1,1 +1,1 @@
-统计遗传学分析的一些script和skill（主要为`GWAS`相关）
+Some scripts and skills for statistical genetics analysis during the PhD candidate (mainly related to `GWAS`)
