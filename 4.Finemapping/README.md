@@ -8,12 +8,12 @@ gwas="~/GWAS.txt"
 out_block="~/gwfm/impu_block/GWAS_impu"
 out_impu="GWAS.imputed"
 
-# step1: impute summary data --block split block running is a efficiency way, totally 591 block 
+# step1: impute summary data
 for i in {1..591}; do
-$gctb --ldm-eigen ${ldref} --gwas-summary ${gwas} --impute-summary --block $i --thread 10 --out ${out_block}
+  $gctb --ldm-eigen ${ldref} --gwas-summary ${gwas} --impute-summary --block $i --thread 10 --out ${out_block}
 done
 
-# step2: combined the all block file to one 
+# step2: combined block file to one 
 $gctb --gwas-summary GWAS_impu --merge-block-gwas-summary --out ${out_impu} 
 ```
 ###### 2. Running GWFM
