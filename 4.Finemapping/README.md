@@ -1,4 +1,4 @@
-#### GWFM
+#### 1、GWFM
 ###### 1. imputed the summary data
 ```
 #! /bin/bash
