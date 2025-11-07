@@ -2,36 +2,37 @@
 ###### 1. imputed the summary data
 ```
 #! /bin/bash
+
 gctb="~/software/gctb"
 ldref="~/GCTB_ref/ukbEUR_Imputed"
 gwas="~/GWAS.txt"
 out_block="~/gwfm/impu_block/GWAS_impu"
 out_impu="GWAS.imputed"
-
-# step1: impute summary data
+ldfile="~/GCTB_ref/ukbEUR_Imputed/LD_rsq05.ld.txt"
+annofile="~/GCTB_ref/annot_baseline2.2.txt"
+gwas_impu="GWAS.imputed.ma"
+```
+step1: impute summary data
+```
 for i in {1..591}; do
   $gctb --ldm-eigen ${ldref} --gwas-summary ${gwas} --impute-summary --block $i --thread 10 --out ${out_block}
 done
+```
 
-# step2: combined block file to one 
+step2: combined block file to one 
+```
 $gctb --gwas-summary GWAS_impu --merge-block-gwas-summary --out ${out_impu} 
 ```
-###### 2. Running GWFM
-```
-annofile="~/GCTB_ref/annot_baseline2.2.txt"
-gwas_impu="GWAS.imputed.ma"
 
+step3: Running GWFM
+```
 outprx=$(basename -- ${gwas_impu} ".imputed.ma")
 
-# step1: GWFM
 $gctb --sbayes RC --ldm-eigen $ldref --annot $annofile --gwas-summary $gwas_impu --n-dist-aut --write-mcmc-bin --thread 10 --out ${outprx}_SbayesRC
+```
 
-# step2: Calculate credible sets
-# 1: calculate pairwise ld r2 > 0.5, only need run once
-# $gctb --get-ld --ldm-eigen ${ldref} --rsq 0.5 --out LD_rsq05 --thread 10
-# 2: use ldfile calculate credible sets
-ldfile="~/GCTB_ref/ukbEUR_Imputed/LD_rsq05.ld.txt"
-
+step4: credible sets
+```
 $gctb --cs --ld-file ${ldfile} --pip 0.9 --mcmc-samples $${outprx}_SbayesRC --out ${outprx}_SbayesRC_finemapping
 ```
 
