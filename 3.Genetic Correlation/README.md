@@ -19,52 +19,56 @@ popcorn fit -v 1 --cfile EUR_EAS_all_gen_imp.cscore --sfile1 $eur.txt.popcornin 
 # --sfile1 和 sfile2顺序需与 cscore 中一致
 ```
 
-#### change file to popcornin
+### 2.`LDSC` cross trait or trait cross cohort correlation (same ancestry)
 ```
-python $popcornIn.py infile 1349 outfile.txt
-```
-popcornIn.py
-```
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-'''
-@File    :   popcornIn.py
-@Time    :   2024/7/23 16:05:24
-@Author  :   Lulu Shi    
-@Mails   :   crazzy_rabbit@163.com
-@link    :   https://github.com/Crazzy-Rabbit
-'''
+conda activate ldsc
 
-import os 
-import sys
-import gzip
-import pandas as pd
-from io import StringIO
-"""
-change BBJ SNP format same as UKB \n
-such 1:612688_TCTC_T 1:rs1234145 \n
-and change file header as rsid/SNP a1/A1 a2/A2 af N beta SE \n
-"""
+#! /bin/bash
+sums="/public/home/shilulu/software/ldsc/munge_sumstats.py"
+ldsc="/public/home/shilulu/software/ldsc/ldsc.py"
+hm3="/public/home/shilulu/Wulab/LDSC/eur_w_ld_chr/w_hm3.snplist"
+weight="/public/home/shilulu/Wulab/LDSC/eur_w_ld_chr/"
+gwas="gwas.txt"
+outdir="/ldsc"
 
-infile = sys.argv[1]
-samplesize = sys.argv[2]
-outfile = sys.argv[3]
+prefix=$(basename $gwas ".txt")
 
-if infile.endswith('.gz'):
-    with gzip.open(infile, 'rt') as f_in:
-            csv_content = f_in.read()   
-    df = pd.read_csv(StringIO(csv_content), dtype={'BP':int}, sep="\\s+", engine='python')
-    
-    df.columns = ['SNP', 'CHR', 'BP', 'a2', 'a1', 'af', 'INFO', 'beta', 'SE', 'P']
-    df['N'] = samplesize
-    df.to_csv(f"{outfile}.popcornin", sep='\t', index=False)
-else:
-    df = pd.read_csv(infile, dtype={'POS':int}, sep='\\s+', engine='python')
-    df.loc[df['SNP'].str.startswith('chr'), 'SNP'] = \
-           df['SNP'].str.replace('chr', '', regex=True).str.replace("_", ":") + '_' + df['A1'] + '_' + df['A2']
-    
-    df.columns = ['SNP', 'CHR', 'BP', 'a2', 'a1', 'af', 'Rsq', 'beta', 'SE', 'P']
-    df['N'] = samplesize
-    df.to_csv(f"{outfile}.popcornin", sep='\t', index=False)
+#- munge sumstats
+cmd="$sums --sumstats $gwas --merge-alleles $hm3 --chunksize 500000 --a1 A1 --a2 A2 --out $outdir/$prefix"
+qsubshcom  "$cmd" 1 10G ldsc_sum 1:00:00 ""
+
+#- correlation
+order=(ARHL_meta Tiredness Neuroticism LongStandIllness Overall_health_rating Noisy_workplace Snoring Insomnia Taking_other_prescription_medications Waist_circumference Loneliness derpess_mood Past_tobacco_smoking)
+files=""
+for trait in "${order[@]}"; do
+    res=$trait.sumstats.gz
+    files+="$res,"
+done
+files=${files%,}
+
+cmd="$ldsc --rg $files --ref-ld-chr $weight --w-ld-chr $weight --out Genetic_corr"
+qsubshcom "$cmd" 1 20G ldsc_corre 60:00:00 ""
 ```
-### 2.`LDSC` cross trait or trait cross cohort correlation (sample ancestry)
+
+### 3.`GSMR` putative causal association between two phenotypes
+```
+#! /bin/bash 
+gcta="/public/home/wuyang/bin/gcta-1.94.1-linux-kernel-3-x86_64/gcta-1.94.1"
+ref="/public/share/wchirdzhq2022/Wulab_share/1000GenomePhase3_Ref_hg37/g1000_eur/g1000_eur"
+exposure="/public/home/shilulu/Wulab_project/ARHL/NC_sup_test/06.trait_association/GSMR/exposure.txt"
+outcome="/public/home/shilulu/Wulab_project/ARHL/NC_sup_test/06.trait_association/GSMR/outcome.txt"
+
+cmd="$gcta --bfile $ref \
+--gsmr-file $exposure $outcome \
+--gsmr-direction 2 \
+--gwas-thresh 5e-08 \
+--diff-freq 0.5 \
+--clump-r2 0.05 \
+--gsmr2-beta \
+--gsmr-snp-min 10 \
+--heidi-thresh 0.01 \
+--effect-plot \
+--out ARHL_gsmr \
+--thread-num 20"
+qsubshcom "$cmd" 20 100G gsmr 5:00:00 ""
+```
