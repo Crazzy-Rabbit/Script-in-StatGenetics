@@ -84,3 +84,56 @@ for (i in seq_len(nrow(causal))) {
 ```
 ###### 结果示例
 ![1762479992443](image/GCTB_GWFM/1762479992443.png)
+
+#### 2、SuSiE
+
+step 1: generate ld matrix with plink
+```
+plink --bfile 1KG --r square --extract snp.list --write-snplist --out gwas.snps
+```
+
+step 2: Run SuSiE
+```
+#- susieR
+gwas      <- "All_MVP_Trpchevska_De-Angelis_BBJ.imputed.ma" 
+ldprefix  <- "gwas.snps"
+out_dir   <- "susie"
+dir.create(out_dir, showWarnings = FALSE)
+
+library(susieR)
+library(data.table)
+library(Matrix)
+
+sumstats <- fread(gwas)
+info     <- fread(paste0(ldprefix, ".snplist"))
+R        <- fread(paste0(ldprefix, ".ld"))
+R        <- as.matrix(R)
+
+idx      <- match(info$ID, sumstats$SNP)
+sumstats <- sumstats[idx]
+stopifnot(all(info$ID == sumstats$SNP))
+
+z        <- sumstats$b / sumstats$se
+n        <- median(sumstats$N, na.rm=TRUE)
+res      <- susie_rss(z, R, L=10, estimate_residual_variance=T, estimate_prior_variance=TRUE, check_R=FALSE, n=n)
+pip      <- data.frame(SNP=names(res$pip), PIP=as.numeric(res$pip))
+cs_list  <- susie_get_cs(res)
+cs       <- data.frame(CS_ID     = rep(names(cs$cs), lengths(cs$cs)),
+                        SNP      = unlist(lapply(cs$cs, function(x) names(pip)[x])),
+                        PIP      = unlist(lapply(cs$cs, function(x) pip[x])),
+                        Coverage = rep(cs$coverage, lengths(cs$cs)))
+
+```
+step 3: plot gwas locus
+```
+#- plot z score comparison
+susie_plot(z, y = "z", b=b)
+```
+![1762916414358](image/README/1762916414358.png)
+
+step 4: plot PIP
+```
+#- plot PIP comparison
+susie_plot(res, y="PIP", b=b)
+```
+![1762916429195](image/README/1762916429195.png)
