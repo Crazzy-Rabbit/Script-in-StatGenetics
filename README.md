@@ -18,10 +18,11 @@ $$
 
 | 符号 | 名称 | 维度 | 性质 |
 |:---:|:---:|:---:|:---:|
-| $R$ | 原始矩阵 | $m \times m$ | 对称正定 |
-| $U$ | 特征向量矩阵 | $m \times m$ | 正交矩阵：$U^\top U = I$ |
-| $\Lambda$ | 特征值矩阵 | $m \times m$ | 对角矩阵：$\Lambda = \mathrm{diag}(\lambda_1,\lambda_2,\dots,\lambda_m)$ |
-| $\lambda_i$ | 特征值 | 标量 | $\lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_m > 0$ |
+| R | 原始矩阵 | m × m | 对称正定 |
+| U | 特征向量矩阵 | m × m | 正交矩阵：UᵀU = I |
+| Λ | 特征值矩阵 | m × m | 对角矩阵：diag(λ₁, λ₂, …, λₘ) |
+| λᵢ | 特征值 | 标量 | λ₁ ≥ λ₂ ≥ … ≥ λₘ > 0 |
+
 
 #### 2.几何意义
 2.1 变换三部曲
