@@ -26,6 +26,7 @@ $$
 
 #### 2.几何意义
 2.1 变换三部曲
+
 $$
 R \times 向量 = U \times \Lambda \times U^T \times 向量
 $$
