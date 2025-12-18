@@ -1,5 +1,74 @@
 Some scripts and skills for statistical genetics analysis during the PhD candidate (mainly related to `GWAS`)
 
+## GWAS 效应量标准化（Scaling）
+
+### 背景
+
+GWAS 输出的边际效应 `b` 和标准误 `se` 通常来自未标准化的基因型（0/1/2），
+且不同研究中的表型方差不可比。
+而 SBayesR、LDpred、PRS-CS 等 summary-based Bayesian 方法默认：
+
+- 基因型已标准化：Var(g) = 1
+- 表型已标准化：Var(y) = 1
+
+因此，在 post-GWAS 分析中，需要先对 GWAS 效应量进行尺度统一。
+
+### 标准化效应量公式
+
+给定 GWAS summary statistics：
+
+- `b`：边际效应估计
+- `se`：标准误
+- `n`：样本量
+- `p`：效应等位基因频率
+- `z = b / se`
+
+标准化后的 SNP 效应量定义为：
+
+$$
+\beta_{\text{scaled}} = \frac{z}{\sqrt{2p(1-p)(n + z^2)}}
+$$
+
+该效应量满足：
+
+- Var(g) = 1
+- Var(y) = 1
+
+可直接用于 summary-based Bayesian / post-GWAS 模型。
+
+### 与 SBayesR 内部 scaling 的关系
+
+SBayesR 在内部会对输入的 `b` 和 `se` 进行如下缩放：
+
+$$
+\beta_{\text{SBayesR}} = b \cdot \frac{1}{\sqrt{n \cdot se^2 + b^2}}
+$$
+
+当 GWAS 使用标准化基因型时，
+上述公式与 $\beta_{\text{scaled}}$ 在数学上是等价的
+（此时 $2p(1-p)$ 被吸收到基因型标准化中）。
+
+### 注意事项
+
+如果输入的效应量已经是 $\beta_{\text{scaled}}$，
+又使用原始 SBayesR（未关闭其内部 scaling），
+则效应量会被重复缩放，导致系统性偏差。
+
+### 实践建议
+
+| 使用场景 | 推荐做法 |
+|--------|--------|
+| 使用原版 SBayesR / SBayesRC | 使用原始 GWAS 的 `b` 和 `se` |
+| 自定义 post-GWAS / meta / beta-imputation | 使用 $\beta_{\text{scaled}}$ |
+| 向 Bayesian 模型输入已标准化效应 | 关闭其内部 scaling |
+
+### 一句话总结
+
+该公式将 GWAS 的 z-score 转换为
+在 Var(g)=1、Var(y)=1 条件下的等价 SNP 效应量，
+是 summary-based Bayesian 遗传分析的统一工作尺度。
+
+---
 ## 特征值分解 (Eigen Decomposition) 详解
 #### 1.基本概念
 1.1 数学定义
