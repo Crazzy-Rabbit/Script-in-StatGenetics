@@ -1,5 +1,80 @@
 Some scripts and skills for statistical genetics analysis during the PhD candidate (mainly related to `GWAS`)
 
+## GWAS simulation中的注意事项
+We simulated phenotypes under a linear model
+
+$$
+y = X\beta + \varepsilon,
+$$
+
+where $X$ is the standardized genotype matrix.
+For $M_c$ causal variants, effect sizes were sampled as
+
+$$
+\beta_j \sim \mathcal{N}\left(0, \frac{h^2}{M_c}\right),
+$$
+
+ensuring that $\mathrm{Var}(X\beta) = h^2$ .
+Environmental noise was sampled as
+
+$$
+\varepsilon \sim \mathcal{N}(0, 1 - h^2).
+$$
+
+### Or, you can
+
+$$
+y = X\boldsymbol{\beta} + \boldsymbol{\varepsilon},
+$$
+
+where $X$ is the standardized genotype matrix.
+The vector of causal variant effects $\boldsymbol{\beta}$ was sampled from a multivariate normal distribution
+
+$$
+\boldsymbol{\beta} \sim \mathcal{N}\\left(\mathbf{0}, \mathbf{I}\\frac{\mathrm{Var}(X\boldsymbol{\beta})}{(1/h^2 - 1)} \right),
+$$
+
+where $\mathbf{I}$ denotes the identity matrix, implying independent and identically distributed effect sizes across causal variants.
+This parameterization ensures that the genetic component explains a proportion $h^2$ of the total phenotypic variance.
+Environmental noise was sampled as
+
+$$
+\boldsymbol{\varepsilon} \sim \mathcal{N}(0, 1 - h^2).
+$$
+
+只有在 $X$ 被标准化时，才成立，对原始`0/1/2`基因型，必须把 $2p_j(1 - p_j)$ 显示考虑进去
+### For 0/1/2 X
+
+$$
+y = X\boldsymbol{\beta} + \boldsymbol{\varepsilon},
+$$
+
+where $X$ denotes the unstandardized genotype matrix coded as 0/1/2.
+To ensure a target SNP-heritability $h^2$, effect sizes were sampled as
+
+$$
+\boldsymbol{\beta} \sim \mathcal{N}\ \left(
+\mathbf{0},\
+\mathbf{I}\ \frac{h^2}{\mathrm{tr}(X^\top X)/n}
+\right),
+$$
+
+where $\mathbf{I}$ is the identity matrix, implying independent and identically distributed effects across causal variants.
+Here, $\mathrm{tr}(\cdot)$ denotes the matrix trace, i.e., the sum of the diagonal elements:
+
+$$
+\mathrm{tr}(X^\top X) = \sum_{j=1}^{M_c} \sum_{i=1}^{n} X_{ij}^2,
+$$
+
+which represents the total squared genotype values across all causal variants and samples.
+This parameterization guarantees that the genetic component explains a proportion $h^2$ of the total phenotypic variance.
+Environmental noise was sampled as
+
+$$
+\boldsymbol{\varepsilon} \sim \mathcal{N}(0, 1 - h^2).
+$$
+
+---
 ## GWAS 效应量标准化（Scaling）
 
 ### 背景
