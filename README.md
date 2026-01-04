@@ -347,3 +347,137 @@ correct_with_nearpd <- function(R) {
 | 计算 $R^{-1} b$ | $U\big(\Lambda^{-1} (U^\top b)\big)$ | `U %*% (crossprod(U, b)[, 1] / values)` |
 | 特征值过滤 | 保留 $\lambda_i > \epsilon$ | `keep <- values > epsilon` |
 
+## SMR / HEIDI：MVN、d 向量、V=covdxy 的构造
+
+> SMR 里 **HEIDI heterogeneity**：  
+---
+
+##### 1）符号与输入（你手里有什么）
+
+假设某个基因 cis 区域有 `n` 个 SNP（`nsnp = n`），SNP 索引 $\(k = 1,\dots,n\)$。
+
+对于每个 SNP $\(k\)$：
+
+- exposure（eQTL）summary：效应 $\( \hat b_{x,k} \)$，标准误 $\( \hat s_{x,k} \)$
+- outcome（GWAS）summary：效应 $\( \hat b_{y,k} \)$，标准误 $\( \hat s_{y,k} \)$
+- LD 相关矩阵 $\(R\)$：元素 $\(R_{kl} = r_{kl}\)$
+
+代码层面常见对应：
+
+- `bx[k] = expo[k,1]`, `sx[k] = expo[k,2]`
+- `by[k] = outco[k,1]`, `sy[k] = outco[k,2]`
+- `R = corr`（`n x n`）
+- `lead = which.max(expo[,3])`（最强 eQTL 作为 lead SNP）
+
+---
+
+##### 2）SMR ratio（每个 SNP 一个比值）
+
+SMR 的核心比值（Wald ratio）：
+
+- 每个 SNP $k$ 的 ratio：
+
+$$\hat b_{xy,k} = \frac{\hat b_{y,k}} {\hat b_{x,k}}$$
+
+把所有 SNP 的 ratio 堆成向量：
+
+$$\hat{\mathbf b}_{xy} = (\hat b_{xy,1}, \dots, \hat b_{xy,n})^\top$$
+
+形状检查：
+
+- `bxy`：长度 `n`
+- `Sigma_b = Cov(bxy)`：`n x n`
+
+---
+
+##### 3）HEIDI 的核心：差值向量 d（用来测“异质性”）
+
+先选一个 lead SNP（索引记作 $0$，代码里就是 `lead`）。
+
+对每个非 lead SNP $i \neq 0$，定义差值：
+
+$$\hat d_i = \hat b_{xy,i} - \hat b_{xy,0}$$
+
+把所有 $\(i \neq 0\)$ 的差值堆成向量：
+
+$$\hat{\mathbf d} = (\hat d_1, \dots, \hat d_m)^\top$$
+
+其中 `$\(m = n-1\)$
+
+直觉：
+
+- 如果一个基因区域里所有 SNP 反映的是**同一个因果信号**，那么所有 $\hat b_{xy,i}$ 应该一致  
+  => $\hat d_i \approx 0$（只剩抽样误差）
+- 如果出现**连锁/多信号混合**，不同 SNP 的 $\hat b_{xy}$ 会系统性不一致  
+  => $\hat d$ 会明显偏离 0（异质性）
+
+形状检查：
+
+- `d`：长度 `m = n-1`
+- `V = Cov(d)`：`m x m`（这就是你代码里的 `covdxy`）
+
+---
+
+##### 4）MVN 是什么？为什么会出现？
+
+MVN = Multivariate Normal，多元正态分布。
+
+HEIDI 使用近似：
+
+$$\hat{\mathbf d} \sim MVN(\mathbf d, V)$$
+
+含义：
+
+- $\mathbf d = E(\hat{\mathbf d})$：差值向量的真实均值
+- $V = Cov(\hat{\mathbf d})$：差值向量的协方差矩阵
+
+零假设（无异质性）：
+
+$$H_0: \mathbf d = 0$$
+
+为什么 $V$ 不是对角矩阵？
+
+- SNP 之间常有 LD（$R$ 非对角不为 0）
+- 这会导致不同 SNP 的估计误差相关  
+  => $\hat b_{xy,i}$ 之间相关  
+  => $\hat d$ 的不同分量也相关  
+  => 必须用完整协方差 $V$，不能只用方差（对角线）
+
+---
+
+##### 5）最关键：怎么从 `Sigma_b = Cov(bxy)` 构造 `V = Cov(d)`？
+
+先定义：
+
+$$\Sigma_b = Cov(\hat{\mathbf b}_{xy})$$
+
+元素是 $\Sigma_b[k,l] = Cov(\hat b_{xy,k}, \hat b_{xy,l})$
+
+因为 $\hat d_i = \hat b_{xy,i} - \hat b_{xy,0}$，所以对任意非 lead SNP $i,j \neq 0$：
+
+$$Cov(\hat d_i, \hat d_j) = Cov(\hat b_{xy,i} - \hat b_{xy,0},\ \hat b_{xy,j} - \hat b_{xy,0})$$
+
+用协方差恒等式 $Cov(A-B, C-B)=Cov(A,C)+Var(B)-Cov(A,B)-Cov(C,B)$ 得到：
+
+$$Cov(\hat d_i,\hat d_j) = Cov(\hat b_{xy,i},\hat b_{xy,j}) + Var(\hat b_{xy,0}) - Cov(\hat b_{xy,i},\hat b_{xy,0}) - Cov(\hat b_{xy,j},\hat b_{xy,0})$$
+
+这就是构造 `V=covdxy` 的根本原因：**d 是 bxy 的线性变换**，协方差可以直接从 `Sigma_b` 推出来。
+
+---
+
+## 6）HEIDI 统计量（概念上怎么用 V）
+
+常见二次型（不显式求逆，用 `solve` 更稳）：
+
+$$Q = \hat{\mathbf d}^\top V^{-1}\hat{\mathbf d}$$
+
+近似下：
+
+- $Q \sim \chi^2_\nu$（`ν` 近似为 `m`，实际实现可能因筛 SNP/约束略有调整）
+
+解释：
+
+- p 小（Q 大）：`d` 偏离 0 明显 => 异质性显著 => 更像连锁/多信号 => 通常拒绝该 SMR 关联
+- p 大：一致性较好 => 支持单信号解释（注意：不等价于“证明因果”）
+
+---
