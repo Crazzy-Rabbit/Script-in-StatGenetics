@@ -398,11 +398,11 @@ $$\hat{\mathbf b}_{xy} = (\hat b_{xy,1}, \dots, \hat b_{xy,n})^\top$$
 
 $$\hat d_i = \hat b_{xy,i} - \hat b_{xy,0}$$
 
-把所有 $\(i \neq 0\)$ 的差值堆成向量：
+把所有 $i \neq 0$ 的差值堆成向量：
 
 $$\hat{\mathbf d} = (\hat d_1, \dots, \hat d_m)^\top$$
 
-其中 `$\(m = n-1\)$
+其中 $m = n-1$
 
 直觉：
 
@@ -437,7 +437,7 @@ $$H_0: \mathbf d = 0$$
 
 为什么 $V$ 不是对角矩阵？
 
-- SNP 之间常有 LD（$R$ 非对角不为 0）
+- SNP 之间常有 LD（ $R$ 非对角不为 0）
 - 这会导致不同 SNP 的估计误差相关  
   => $\hat b_{xy,i}$ 之间相关  
   => $\hat d$ 的不同分量也相关  
