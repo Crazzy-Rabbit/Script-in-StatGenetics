@@ -414,7 +414,7 @@ $$\hat{\mathbf d} = (\hat d_1, \dots, \hat d_m)^\top$$
 形状检查：
 
 - `d`：长度 `m = n-1`
-- `V = Cov(d)`：`m x m`（这就是你代码里的 `covdxy`）
+- `V = Cov(d)`：`m x m`
 
 ---
 
@@ -445,7 +445,7 @@ $$H_0: \mathbf d = 0$$
 
 ---
 
-##### 5）最关键：怎么从 `Sigma_b = Cov(bxy)` 构造 `V = Cov(d)`？
+#### 5）最关键：怎么从 `Sigma_b = Cov(bxy)` 构造 `V = Cov(d)`？
 
 先定义：
 
@@ -465,7 +465,7 @@ $$Cov(\hat d_i,\hat d_j) = Cov(\hat b_{xy,i},\hat b_{xy,j}) + Var(\hat b_{xy,0})
 
 ---
 
-## 6）HEIDI 统计量（概念上怎么用 V）
+#### 6）HEIDI 统计量（概念上怎么用 V）
 
 常见二次型（不显式求逆，用 `solve` 更稳）：
 
